@@ -4,7 +4,7 @@
   import "./styles/index.css";
 
   createRoot(document.getElementById("root")!).render(
-    <div style={{ width: 375, height: 849, overflow: "hidden", position: "relative", margin: "0 auto" }}>
+    <div style={{ width: 375, minHeight: 849, position: "relative", margin: "0 auto" }}>
       <App />
     </div>
   );
