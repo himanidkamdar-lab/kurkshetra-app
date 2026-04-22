@@ -68,73 +68,73 @@ export default function ScheduleScreen({ onNavigate }: ScheduleScreenProps) {
   const getEventsForMonth = (monthIndex: number) => {
     const monthEvents: { [key: number]: { [key: string]: { title: string; time: string; color: string; duration?: number } } } = {
       0: { // April - Security focused
-        "1-1": { title: "Team meeting", time: "10:00 AM", color: "bg-[#3B82F6]" },
-        "5-2": { title: "Security briefing", time: "2:00 PM", color: "bg-[#10B981]", duration: 1 },
-        "7-2": { title: "Team sync", time: "4:00 PM", color: "bg-[#FE5A00]" },
-        "2-3": { title: "Equipment check", time: "11:00 AM", color: "bg-[#F59E0B]" },
-        "5-3": { title: "HOD Meeting", time: "2:00 PM", color: "bg-[#3B82F6]" },
-        "1-4": { title: "Venue check", time: "10:00 AM", color: "bg-[#10B981]" },
-        "6-4": { title: "Training", time: "3:00 PM", color: "bg-[#FE5A00]" },
-        "3-5": { title: "Lunch brief", time: "12:00 PM", color: "bg-[#8B5CF6]" },
-        "7-5": { title: "Planning", time: "4:00 PM", color: "bg-[#3B82F6]" },
-        "0-6": { title: "Weekend prep", time: "9:00 AM", color: "bg-[#F59E0B]" },
-        "4-6": { title: "Review", time: "1:00 PM", color: "bg-[#EC4899]" },
+        "1-1": { title: "Team meeting", time: "10:00 AM", color: "bg-[#E8E8E8]" },
+        "5-2": { title: "Security briefing", time: "2:00 PM", color: "bg-[#E8E8E8]", duration: 1 },
+        "7-2": { title: "Team sync", time: "4:00 PM", color: "bg-[#E8E8E8]" },
+        "2-3": { title: "Equipment check", time: "11:00 AM", color: "bg-[#E8E8E8]" },
+        "5-3": { title: "HOD Meeting", time: "2:00 PM", color: "bg-[#E8E8E8]" },
+        "1-4": { title: "Venue check", time: "10:00 AM", color: "bg-[#E8E8E8]" },
+        "6-4": { title: "Training", time: "3:00 PM", color: "bg-[#E8E8E8]" },
+        "3-5": { title: "Lunch brief", time: "12:00 PM", color: "bg-[#E8E8E8]" },
+        "7-5": { title: "Planning", time: "4:00 PM", color: "bg-[#E8E8E8]" },
+        "0-6": { title: "Weekend prep", time: "9:00 AM", color: "bg-[#E8E8E8]" },
+        "4-6": { title: "Review", time: "1:00 PM", color: "bg-[#E8E8E8]" },
       },
       1: { // May - Planning phase
-        "2-1": { title: "Budget review", time: "11:00 AM", color: "bg-[#3B82F6]", duration: 1 },
-        "4-2": { title: "Sponsor meeting", time: "1:00 PM", color: "bg-[#10B981]" },
-        "6-2": { title: "Design review", time: "3:00 PM", color: "bg-[#8B5CF6]" },
-        "1-3": { title: "Marketing sync", time: "10:00 AM", color: "bg-[#EC4899]" },
-        "5-3": { title: "Team workshop", time: "2:00 PM", color: "bg-[#F59E0B]", duration: 1 },
-        "3-4": { title: "Venue booking", time: "12:00 PM", color: "bg-[#3B82F6]" },
-        "7-4": { title: "Logistics plan", time: "4:00 PM", color: "bg-[#10B981]" },
-        "2-5": { title: "Cultural prep", time: "11:00 AM", color: "bg-[#FE5A00]" },
-        "0-6": { title: "Weekend review", time: "9:00 AM", color: "bg-[#8B5CF6]" },
+        "2-1": { title: "Budget review", time: "11:00 AM", color: "bg-[#E8E8E8]", duration: 1 },
+        "4-2": { title: "Sponsor meeting", time: "1:00 PM", color: "bg-[#E8E8E8]" },
+        "6-2": { title: "Design review", time: "3:00 PM", color: "bg-[#E8E8E8]" },
+        "1-3": { title: "Marketing sync", time: "10:00 AM", color: "bg-[#E8E8E8]" },
+        "5-3": { title: "Team workshop", time: "2:00 PM", color: "bg-[#E8E8E8]", duration: 1 },
+        "3-4": { title: "Venue booking", time: "12:00 PM", color: "bg-[#E8E8E8]" },
+        "7-4": { title: "Logistics plan", time: "4:00 PM", color: "bg-[#E8E8E8]" },
+        "2-5": { title: "Cultural prep", time: "11:00 AM", color: "bg-[#E8E8E8]" },
+        "0-6": { title: "Weekend review", time: "9:00 AM", color: "bg-[#E8E8E8]" },
       },
       2: { // June - Preparation
-        "1-0": { title: "Stage design", time: "10:00 AM", color: "bg-[#8B5CF6]", duration: 1 },
-        "4-1": { title: "Tech rehearsal", time: "1:00 PM", color: "bg-[#EC4899]" },
-        "6-2": { title: "Sound check", time: "3:00 PM", color: "bg-[#3B82F6]" },
-        "2-3": { title: "Lighting setup", time: "11:00 AM", color: "bg-[#F59E0B]" },
-        "5-3": { title: "Artist briefing", time: "2:00 PM", color: "bg-[#10B981]", duration: 1 },
-        "3-4": { title: "Rehearsal", time: "12:00 PM", color: "bg-[#FE5A00]" },
-        "7-5": { title: "Final checks", time: "4:00 PM", color: "bg-[#8B5CF6]" },
-        "1-6": { title: "Team meeting", time: "10:00 AM", color: "bg-[#3B82F6]" },
+        "1-0": { title: "Stage design", time: "10:00 AM", color: "bg-[#E8E8E8]", duration: 1 },
+        "4-1": { title: "Tech rehearsal", time: "1:00 PM", color: "bg-[#E8E8E8]" },
+        "6-2": { title: "Sound check", time: "3:00 PM", color: "bg-[#E8E8E8]" },
+        "2-3": { title: "Lighting setup", time: "11:00 AM", color: "bg-[#E8E8E8]" },
+        "5-3": { title: "Artist briefing", time: "2:00 PM", color: "bg-[#E8E8E8]", duration: 1 },
+        "3-4": { title: "Rehearsal", time: "12:00 PM", color: "bg-[#E8E8E8]" },
+        "7-5": { title: "Final checks", time: "4:00 PM", color: "bg-[#E8E8E8]" },
+        "1-6": { title: "Team meeting", time: "10:00 AM", color: "bg-[#E8E8E8]" },
       },
       3: { // July - Execution
-        "0-0": { title: "Morning setup", time: "9:00 AM", color: "bg-[#FE5A00]" },
-        "3-1": { title: "Volunteer brief", time: "12:00 PM", color: "bg-[#3B82F6]", duration: 1 },
-        "5-2": { title: "Event kickoff", time: "2:00 PM", color: "bg-[#10B981]", duration: 1 },
-        "7-2": { title: "Evening show", time: "4:00 PM", color: "bg-[#8B5CF6]" },
-        "2-3": { title: "Cultural event", time: "11:00 AM", color: "bg-[#EC4899]" },
-        "6-4": { title: "Stage performance", time: "3:00 PM", color: "bg-[#F59E0B]", duration: 1 },
-        "4-5": { title: "Award ceremony", time: "1:00 PM", color: "bg-[#FE5A00]" },
-        "1-6": { title: "Closing event", time: "10:00 AM", color: "bg-[#3B82F6]" },
+        "0-0": { title: "Morning setup", time: "9:00 AM", color: "bg-[#E8E8E8]" },
+        "3-1": { title: "Volunteer brief", time: "12:00 PM", color: "bg-[#E8E8E8]", duration: 1 },
+        "5-2": { title: "Event kickoff", time: "2:00 PM", color: "bg-[#E8E8E8]", duration: 1 },
+        "7-2": { title: "Evening show", time: "4:00 PM", color: "bg-[#E8E8E8]" },
+        "2-3": { title: "Cultural event", time: "11:00 AM", color: "bg-[#E8E8E8]" },
+        "6-4": { title: "Stage performance", time: "3:00 PM", color: "bg-[#E8E8E8]", duration: 1 },
+        "4-5": { title: "Award ceremony", time: "1:00 PM", color: "bg-[#E8E8E8]" },
+        "1-6": { title: "Closing event", time: "10:00 AM", color: "bg-[#E8E8E8]" },
       },
       4: { // August - Post-event
-        "1-1": { title: "Debrief", time: "10:00 AM", color: "bg-[#3B82F6]", duration: 1 },
-        "4-2": { title: "Feedback review", time: "1:00 PM", color: "bg-[#10B981]" },
-        "6-3": { title: "Financial audit", time: "3:00 PM", color: "bg-[#F59E0B]" },
-        "2-4": { title: "Thank you meet", time: "11:00 AM", color: "bg-[#EC4899]" },
-        "5-5": { title: "Report writing", time: "2:00 PM", color: "bg-[#8B5CF6]" },
+        "1-1": { title: "Debrief", time: "10:00 AM", color: "bg-[#E8E8E8]", duration: 1 },
+        "4-2": { title: "Feedback review", time: "1:00 PM", color: "bg-[#E8E8E8]" },
+        "6-3": { title: "Financial audit", time: "3:00 PM", color: "bg-[#E8E8E8]" },
+        "2-4": { title: "Thank you meet", time: "11:00 AM", color: "bg-[#E8E8E8]" },
+        "5-5": { title: "Report writing", time: "2:00 PM", color: "bg-[#E8E8E8]" },
       },
       5: { // September - Analysis
-        "3-1": { title: "Data analysis", time: "12:00 PM", color: "bg-[#3B82F6]", duration: 1 },
-        "5-2": { title: "Team retrospective", time: "2:00 PM", color: "bg-[#10B981]" },
-        "1-3": { title: "Improvement plan", time: "10:00 AM", color: "bg-[#FE5A00]" },
-        "7-4": { title: "Next year prep", time: "4:00 PM", color: "bg-[#8B5CF6]" },
+        "3-1": { title: "Data analysis", time: "12:00 PM", color: "bg-[#E8E8E8]", duration: 1 },
+        "5-2": { title: "Team retrospective", time: "2:00 PM", color: "bg-[#E8E8E8]" },
+        "1-3": { title: "Improvement plan", time: "10:00 AM", color: "bg-[#E8E8E8]" },
+        "7-4": { title: "Next year prep", time: "4:00 PM", color: "bg-[#E8E8E8]" },
       },
       6: { // October - Planning next year
-        "2-2": { title: "Concept meeting", time: "11:00 AM", color: "bg-[#EC4899]", duration: 1 },
-        "4-3": { title: "Theme discussion", time: "1:00 PM", color: "bg-[#3B82F6]" },
-        "6-4": { title: "Budget planning", time: "3:00 PM", color: "bg-[#10B981]" },
-        "1-5": { title: "Team formation", time: "10:00 AM", color: "bg-[#F59E0B]" },
+        "2-2": { title: "Concept meeting", time: "11:00 AM", color: "bg-[#E8E8E8]", duration: 1 },
+        "4-3": { title: "Theme discussion", time: "1:00 PM", color: "bg-[#E8E8E8]" },
+        "6-4": { title: "Budget planning", time: "3:00 PM", color: "bg-[#E8E8E8]" },
+        "1-5": { title: "Team formation", time: "10:00 AM", color: "bg-[#E8E8E8]" },
       },
       7: { // November - Recruitment
-        "3-1": { title: "Recruitment drive", time: "12:00 PM", color: "bg-[#FE5A00]", duration: 1 },
-        "5-3": { title: "Interviews", time: "2:00 PM", color: "bg-[#3B82F6]", duration: 1 },
-        "7-4": { title: "Orientation", time: "4:00 PM", color: "bg-[#10B981]" },
-        "2-5": { title: "Training begins", time: "11:00 AM", color: "bg-[#8B5CF6]" },
+        "3-1": { title: "Recruitment drive", time: "12:00 PM", color: "bg-[#E8E8E8]", duration: 1 },
+        "5-3": { title: "Interviews", time: "2:00 PM", color: "bg-[#E8E8E8]", duration: 1 },
+        "7-4": { title: "Orientation", time: "4:00 PM", color: "bg-[#E8E8E8]" },
+        "2-5": { title: "Training begins", time: "11:00 AM", color: "bg-[#E8E8E8]" },
       },
     };
     return monthEvents[monthIndex] || {};
@@ -251,14 +251,14 @@ export default function ScheduleScreen({ onNavigate }: ScheduleScreenProps) {
                         >
                           {event && (
                             <div
-                              className={`${event.color} text-white rounded p-1.5 text-left h-full ${
+                              className={`${event.color} text-[#333] rounded p-1.5 text-left h-full ${
                                 event.duration === 1 ? "absolute inset-0.5 bottom-auto h-[88px]" : ""
                               }`}
                             >
                               <p className="font-semibold leading-tight" style={{ fontSize: "9px" }}>
                                 {event.title}
                               </p>
-                              <p className="opacity-90 mt-0.5" style={{ fontSize: "8px" }}>
+                              <p className="text-[#666] mt-0.5" style={{ fontSize: "8px" }}>
                                 {event.time}
                               </p>
                             </div>
