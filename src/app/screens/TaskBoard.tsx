@@ -1,462 +1,349 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Filter, Plus, ArrowLeft, AlertCircle, Clock, CheckCircle2, X, Edit2, Trash2 } from "lucide-react";
+import {
+  Plus, ArrowLeft, AlertCircle, Clock, CheckCircle2,
+  X, Calendar, User, ChevronDown, ChevronUp, Edit2, Trash2
+} from "lucide-react";
 import { BottomNav } from "../components/BottomNav";
 
+type TaskStatus = "upcoming" | "inProgress" | "completed";
+
 interface Task {
+  id: string;
   title: string;
-  assignee: string;
-  deadline: string;
   description: string;
+  deadline: string;
+  appointedBy: string;
+  status: TaskStatus;
 }
 
+const STATUS_CONFIG = {
+  upcoming:   { label: "Upcoming",    color: "#EF4444", bg: "#EF444415", icon: AlertCircle },
+  inProgress: { label: "In Progress", color: "#F59E0B", bg: "#F59E0B15", icon: Clock },
+  completed:  { label: "Completed",   color: "#10B981", bg: "#10B98115", icon: CheckCircle2 },
+};
+
+const INITIAL_TASKS: Task[] = [
+  { id: "1", title: "Setup main entrance checkpoint",  description: "Install barriers, signage, and verify volunteer positions at all three entry gates.", deadline: "Today 5PM",   appointedBy: "Rajesh Kumar",  status: "upcoming"   },
+  { id: "2", title: "Verify volunteer credentials",    description: "Cross-check all volunteer ID cards against the approved list. Flag any discrepancies.", deadline: "Today 7PM",   appointedBy: "Priya Sharma",  status: "upcoming"   },
+  { id: "3", title: "Emergency protocol briefing",     description: "Brief all security staff on emergency exits, crowd control, and escalation paths.", deadline: "Tomorrow 9AM", appointedBy: "Rajesh Kumar",  status: "upcoming"   },
+  { id: "4", title: "Coordinate with event team",      description: "Align on stage security requirements, backstage access, and performer escort duties.", deadline: "Apr 18",      appointedBy: "Ananya Verma",  status: "inProgress" },
+  { id: "5", title: "Update duty roster",              description: "Assign weekend shifts, confirm availability with all members, and publish final roster.", deadline: "Apr 19",      appointedBy: "Rajesh Kumar",  status: "inProgress" },
+  { id: "6", title: "Equipment inventory check",       description: "Count and test all walkie-talkies, batons, and vests. Log any missing or damaged items.", deadline: "Apr 20",      appointedBy: "Amit Patel",    status: "inProgress" },
+  { id: "7", title: "Complete security audit",         description: "Full campus perimeter walk-through. Document all vulnerabilities and corrective actions taken.", deadline: "Apr 10",      appointedBy: "Rajesh Kumar",  status: "completed"  },
+  { id: "8", title: "New volunteer orientation",       description: "Conducted onboarding session for 12 new volunteers. Distributed handbooks and access cards.", deadline: "Apr 12",      appointedBy: "Priya Sharma",  status: "completed"  },
+];
+
 export default function TaskBoard({ onNavigate }: { onNavigate: (screen: string) => void }) {
-  const [showNewTaskModal, setShowNewTaskModal] = useState(false);
-  const [editingTask, setEditingTask] = useState<{ task: Task; columnType: "urgent" | "inProgress" | "completed"; index: number } | null>(null);
-  const [taskTitle, setTaskTitle] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
-  const [taskDeadline, setTaskDeadline] = useState("");
-  const [taskStatus, setTaskStatus] = useState<"urgent" | "inProgress" | "completed">("urgent");
+  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [collapsed, setCollapsed] = useState<Record<TaskStatus, boolean>>({ upcoming: false, inProgress: false, completed: false });
 
-  const [urgentTasks, setUrgentTasks] = useState<Task[]>([
-    {
-      title: "Setup main entrance checkpoint",
-      assignee: "RM",
-      deadline: "Today 5PM",
-      description: "Install barriers and signage",
-    },
-    {
-      title: "Verify volunteer credentials",
-      assignee: "RM",
-      deadline: "Today 7PM",
-      description: "Check IDs and access cards",
-    },
-    {
-      title: "Emergency protocol briefing",
-      assignee: "RM",
-      deadline: "Tomorrow 9AM",
-      description: "Brief all security staff",
-    },
-  ]);
+  // Form state
+  const [formTitle, setFormTitle] = useState("");
+  const [formDesc, setFormDesc] = useState("");
+  const [formDeadline, setFormDeadline] = useState("");
+  const [formAppointedBy, setFormAppointedBy] = useState("");
+  const [formStatus, setFormStatus] = useState<TaskStatus>("upcoming");
 
-  const [inProgressTasks, setInProgressTasks] = useState<Task[]>([
-    {
-      title: "Coordinate with event team",
-      assignee: "RM",
-      deadline: "Apr 18",
-      description: "Align on stage security",
-    },
-    {
-      title: "Update duty roster",
-      assignee: "RM",
-      deadline: "Apr 19",
-      description: "Assign shifts for weekend",
-    },
-    {
-      title: "Equipment inventory check",
-      assignee: "RM",
-      deadline: "Apr 20",
-      description: "Verify walkie talkies stock",
-    },
-  ]);
-
-  const [completedTasks, setCompletedTasks] = useState<Task[]>([
-    {
-      title: "Complete security audit",
-      assignee: "RM",
-      deadline: "Apr 10",
-      description: "Campus perimeter check",
-    },
-    {
-      title: "Training session conducted",
-      assignee: "RM",
-      deadline: "Apr 12",
-      description: "New volunteer orientation",
-    },
-  ]);
-
-  const handleAddTask = () => {
-    if (!taskTitle.trim() || !taskDeadline.trim()) return;
-
-    const newTask: Task = {
-      title: taskTitle,
-      assignee: "RM", // Current user
-      deadline: taskDeadline,
-      description: taskDescription,
-    };
-
-    // Add to appropriate column based on status
-    if (taskStatus === "urgent") {
-      setUrgentTasks([...urgentTasks, newTask]);
-    } else if (taskStatus === "inProgress") {
-      setInProgressTasks([...inProgressTasks, newTask]);
-    } else if (taskStatus === "completed") {
-      setCompletedTasks([...completedTasks, newTask]);
-    }
-
-    // Reset form and close modal
-    setTaskTitle("");
-    setTaskDescription("");
-    setTaskDeadline("");
-    setTaskStatus("urgent");
-    setShowNewTaskModal(false);
-  };
-
-  const handleEditTask = () => {
-    if (!taskTitle.trim() || !taskDeadline.trim() || !editingTask) return;
-
-    const updatedTask: Task = {
-      title: taskTitle,
-      assignee: "RM",
-      deadline: taskDeadline,
-      description: taskDescription,
-    };
-
-    // Remove from old column
-    if (editingTask.columnType === "urgent") {
-      const newUrgentTasks = urgentTasks.filter((_, i) => i !== editingTask.index);
-      setUrgentTasks(newUrgentTasks);
-    } else if (editingTask.columnType === "inProgress") {
-      const newInProgressTasks = inProgressTasks.filter((_, i) => i !== editingTask.index);
-      setInProgressTasks(newInProgressTasks);
-    } else if (editingTask.columnType === "completed") {
-      const newCompletedTasks = completedTasks.filter((_, i) => i !== editingTask.index);
-      setCompletedTasks(newCompletedTasks);
-    }
-
-    // Add to new column based on status
-    if (taskStatus === "urgent") {
-      setUrgentTasks([...urgentTasks.filter((_, i) => editingTask.columnType !== "urgent" || i !== editingTask.index), updatedTask]);
-    } else if (taskStatus === "inProgress") {
-      setInProgressTasks([...inProgressTasks.filter((_, i) => editingTask.columnType !== "inProgress" || i !== editingTask.index), updatedTask]);
-    } else if (taskStatus === "completed") {
-      setCompletedTasks([...completedTasks.filter((_, i) => editingTask.columnType !== "completed" || i !== editingTask.index), updatedTask]);
-    }
-
-    // Reset form and close modal
-    setTaskTitle("");
-    setTaskDescription("");
-    setTaskDeadline("");
-    setTaskStatus("urgent");
-    setShowNewTaskModal(false);
+  const openNewForm = () => {
     setEditingTask(null);
+    setFormTitle(""); setFormDesc(""); setFormDeadline(""); setFormAppointedBy(""); setFormStatus("upcoming");
+    setShowForm(true);
   };
 
-  const handleDeleteTask = (columnType: "urgent" | "inProgress" | "completed", index: number) => {
-    if (columnType === "urgent") {
-      const newUrgentTasks = [...urgentTasks];
-      newUrgentTasks.splice(index, 1);
-      setUrgentTasks(newUrgentTasks);
-    } else if (columnType === "inProgress") {
-      const newInProgressTasks = [...inProgressTasks];
-      newInProgressTasks.splice(index, 1);
-      setInProgressTasks(newInProgressTasks);
-    } else if (columnType === "completed") {
-      const newCompletedTasks = [...completedTasks];
-      newCompletedTasks.splice(index, 1);
-      setCompletedTasks(newCompletedTasks);
+  const openEditForm = (task: Task) => {
+    setSelectedTask(null);
+    setEditingTask(task);
+    setFormTitle(task.title); setFormDesc(task.description); setFormDeadline(task.deadline);
+    setFormAppointedBy(task.appointedBy); setFormStatus(task.status);
+    setShowForm(true);
+  };
+
+  const handleSave = () => {
+    if (!formTitle.trim() || !formDeadline.trim()) return;
+    if (editingTask) {
+      setTasks(tasks.map((t) => t.id === editingTask.id
+        ? { ...t, title: formTitle, description: formDesc, deadline: formDeadline, appointedBy: formAppointedBy, status: formStatus }
+        : t
+      ));
+    } else {
+      setTasks([...tasks, {
+        id: Date.now().toString(), title: formTitle, description: formDesc,
+        deadline: formDeadline, appointedBy: formAppointedBy, status: formStatus,
+      }]);
     }
+    setShowForm(false); setEditingTask(null);
   };
 
-  const renderTaskCard = (task: Task, color: string, columnType: "urgent" | "inProgress" | "completed", index: number) => (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-2xl p-4 border-l-4 mb-3"
-      style={{ borderLeftColor: color }}
-    >
-      <h4 className="font-semibold mb-2" style={{ fontSize: "15px" }}>
-        {task.title}
-      </h4>
-      <p className="text-[#6B6B6B] mb-3" style={{ fontSize: "12px" }}>
-        {task.description}
-      </p>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div 
-            className="w-7 h-7 rounded-full bg-[#FE5A00] flex items-center justify-center text-white font-semibold" 
-            style={{ fontSize: "11px" }}
-          >
-            {task.assignee}
-          </div>
-          <span className="text-[#6B6B6B]" style={{ fontSize: "12px" }}>
-            {task.deadline}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              setEditingTask({ task, columnType, index });
-              setTaskTitle(task.title);
-              setTaskDescription(task.description);
-              setTaskDeadline(task.deadline);
-              setTaskStatus(columnType);
-              setShowNewTaskModal(true);
-            }}
-            className="w-5 h-5 text-[#6B6B6B] hover:text-[#FE5A00] transition-colors"
-          >
-            <Edit2 className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => handleDeleteTask(columnType, index)}
-            className="w-5 h-5 text-[#6B6B6B] hover:text-[#EF4444] transition-colors"
-          >
-            <Trash2 className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-    </motion.div>
-  );
+  const handleDelete = (id: string) => {
+    setTasks(tasks.filter((t) => t.id !== id));
+    setSelectedTask(null);
+  };
+
+  const groupedTasks = (status: TaskStatus) => tasks.filter((t) => t.status === status);
 
   return (
     <div className="min-h-screen bg-[#F5F3F0] pb-24">
       {/* Header */}
-      <div className="bg-white px-4 md:px-6 py-4 border-b border-black/5">
-        <div className="flex items-center gap-4 mb-4 max-w-6xl mx-auto">
+      <div className="bg-white px-5 py-4 border-b border-black/5 sticky top-0 z-20">
+        <div className="flex items-center gap-3 mb-3">
           <button onClick={() => onNavigate("dashboard")}>
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="font-semibold flex-1" style={{ fontSize: "22px" }}>
-            Security Tasks
-          </h1>
-          <button>
-            <Filter className="w-6 h-6 text-[#6B6B6B]" />
+          <h1 className="font-semibold flex-1" style={{ fontSize: "20px" }}>My Tasks</h1>
+          <button onClick={openNewForm} className="flex items-center gap-1.5 bg-[#FE5A00] text-white px-4 py-2 rounded-xl font-semibold" style={{ fontSize: "13px" }}>
+            <Plus className="w-4 h-4" /> New Task
           </button>
         </div>
 
-        <div className="max-w-6xl mx-auto">
-          <button 
-            onClick={() => setShowNewTaskModal(true)}
-            className="w-full bg-[#FE5A00] text-white font-semibold rounded-xl flex items-center justify-center gap-2 py-3 hover:bg-[#FE5A00]/90 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            <span style={{ fontSize: "15px" }}>New Task</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 3-Column Layout */}
-      <div className="px-4 md:px-6 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-6xl mx-auto">
-          
-          {/* Column 1: Urgent Tasks (Red/Orange) */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <AlertCircle className="w-5 h-5 text-[#EF4444]" />
-              <h3 className="font-semibold" style={{ fontSize: "16px" }}>
-                Upcoming Tasks
-              </h3>
-              <span className="ml-auto w-6 h-6 rounded-full bg-[#EF4444]/10 text-[#EF4444] flex items-center justify-center font-semibold" style={{ fontSize: "12px" }}>
-                {urgentTasks.length}
-              </span>
-            </div>
-            <div>
-              {urgentTasks.map((task, index) => (
-                <div key={index}>
-                  {renderTaskCard(task, "#EF4444", "urgent", index)}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Column 2: In Progress Tasks (Yellow) */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <Clock className="w-5 h-5 text-[#F59E0B]" />
-              <h3 className="font-semibold" style={{ fontSize: "16px" }}>
-                In Progress
-              </h3>
-              <span className="ml-auto w-6 h-6 rounded-full bg-[#F59E0B]/10 text-[#F59E0B] flex items-center justify-center font-semibold" style={{ fontSize: "12px" }}>
-                {inProgressTasks.length}
-              </span>
-            </div>
-            <div>
-              {inProgressTasks.map((task, index) => (
-                <div key={index}>
-                  {renderTaskCard(task, "#F59E0B", "inProgress", index)}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Column 3: Completed Tasks (Green) */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <CheckCircle2 className="w-5 h-5 text-[#10B981]" />
-              <h3 className="font-semibold" style={{ fontSize: "16px" }}>
-                Completed
-              </h3>
-              <span className="ml-auto w-6 h-6 rounded-full bg-[#10B981]/10 text-[#10B981] flex items-center justify-center font-semibold" style={{ fontSize: "12px" }}>
-                {completedTasks.length}
-              </span>
-            </div>
-            <div>
-              {completedTasks.map((task, index) => (
-                <div key={index}>
-                  {renderTaskCard(task, "#10B981", "completed", index)}
-                </div>
-              ))}
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* New Task Modal */}
-      <AnimatePresence>
-        {showNewTaskModal && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 z-40"
-              onClick={() => setShowNewTaskModal(false)}
-            />
-
-            {/* Modal */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed inset-x-4 top-1/2 -translate-y-1/2 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-lg bg-white rounded-2xl p-6 z-50 max-h-[90vh] overflow-y-auto"
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="font-semibold" style={{ fontSize: "20px" }}>
-                  {editingTask ? "Edit Task" : "Create New Task"}
-                </h2>
-                <button
-                  onClick={() => {
-                    setShowNewTaskModal(false);
-                    setEditingTask(null);
-                    setTaskTitle("");
-                    setTaskDescription("");
-                    setTaskDeadline("");
-                    setTaskStatus("urgent");
-                  }}
-                  className="w-8 h-8 rounded-full bg-[#F5F3F0] flex items-center justify-center hover:bg-[#E5E3E0] transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+        {/* Summary pills */}
+        <div className="flex gap-2">
+          {(["upcoming", "inProgress", "completed"] as TaskStatus[]).map((s) => {
+            const cfg = STATUS_CONFIG[s];
+            return (
+              <div key={s} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ backgroundColor: cfg.bg }}>
+                <span className="font-bold" style={{ fontSize: "13px", color: cfg.color }}>{groupedTasks(s).length}</span>
+                <span style={{ fontSize: "12px", color: cfg.color }}>{cfg.label}</span>
               </div>
+            );
+          })}
+        </div>
+      </div>
 
-              {/* Form */}
-              <div className="space-y-4">
-                {/* Task Title */}
-                <div>
-                  <label className="block font-semibold mb-2" style={{ fontSize: "14px" }}>
-                    Task Title *
-                  </label>
-                  <input
-                    type="text"
-                    value={taskTitle}
-                    onChange={(e) => setTaskTitle(e.target.value)}
-                    placeholder="e.g., Setup security checkpoint"
-                    className="w-full px-4 py-3 bg-[#F5F3F0] rounded-xl border-2 border-transparent focus:border-[#FE5A00] focus:outline-none transition-colors"
-                    style={{ fontSize: "15px" }}
-                  />
+      {/* Sections */}
+      <div className="px-4 py-4 space-y-4">
+        {(["upcoming", "inProgress", "completed"] as TaskStatus[]).map((status) => {
+          const cfg = STATUS_CONFIG[status];
+          const Icon = cfg.icon;
+          const group = groupedTasks(status);
+          const isCollapsed = collapsed[status];
+
+          return (
+            <div key={status}>
+              {/* Section header */}
+              <button
+                className="w-full flex items-center gap-2 mb-2"
+                onClick={() => setCollapsed((prev) => ({ ...prev, [status]: !prev[status] }))}
+              >
+                <Icon className="w-5 h-5" style={{ color: cfg.color }} />
+                <span className="font-semibold flex-1 text-left" style={{ fontSize: "16px" }}>{cfg.label}</span>
+                <span className="w-6 h-6 rounded-full flex items-center justify-center font-bold" style={{ fontSize: "12px", backgroundColor: cfg.bg, color: cfg.color }}>
+                  {group.length}
+                </span>
+                {isCollapsed ? <ChevronDown className="w-4 h-4 text-[#6B6B6B]" /> : <ChevronUp className="w-4 h-4 text-[#6B6B6B]" />}
+              </button>
+
+              <AnimatePresence>
+                {!isCollapsed && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-3 overflow-hidden"
+                  >
+                    {group.length === 0 && (
+                      <p className="text-[#6B6B6B] text-center py-4" style={{ fontSize: "14px" }}>No tasks here</p>
+                    )}
+                    {group.map((task) => (
+                      <motion.button
+                        key={task.id}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        onClick={() => setSelectedTask(task)}
+                        className="w-full bg-white rounded-2xl p-4 text-left border-l-4 shadow-sm active:scale-[0.98] transition-transform"
+                        style={{ borderLeftColor: cfg.color }}
+                      >
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h4 className="font-semibold leading-snug" style={{ fontSize: "15px" }}>{task.title}</h4>
+                          <span className="px-2 py-0.5 rounded-full text-white flex-shrink-0 font-semibold" style={{ fontSize: "10px", backgroundColor: cfg.color }}>
+                            {cfg.label}
+                          </span>
+                        </div>
+
+                        <p className="text-[#6B6B6B] mb-3 line-clamp-2" style={{ fontSize: "13px" }}>{task.description}</p>
+
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-1.5 text-[#6B6B6B]">
+                            <Calendar className="w-3.5 h-3.5" />
+                            <span style={{ fontSize: "12px" }}>{task.deadline}</span>
+                          </div>
+                          {task.appointedBy && (
+                            <div className="flex items-center gap-1.5 text-[#6B6B6B]">
+                              <User className="w-3.5 h-3.5" />
+                              <span style={{ fontSize: "12px" }}>By {task.appointedBy}</span>
+                            </div>
+                          )}
+                        </div>
+                      </motion.button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Task Detail Sheet */}
+      <AnimatePresence>
+        {selectedTask && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/40 z-40" onClick={() => setSelectedTask(null)} />
+            <motion.div
+              initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 320 }}
+              className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 pb-8"
+            >
+              {/* Handle */}
+              <div className="w-10 h-1 bg-black/10 rounded-full mx-auto mt-3 mb-4" />
+
+              <div className="px-6">
+                {/* Status badge */}
+                {(() => {
+                  const cfg = STATUS_CONFIG[selectedTask.status];
+                  const Icon = cfg.icon;
+                  return (
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ backgroundColor: cfg.bg }}>
+                        <Icon className="w-4 h-4" style={{ color: cfg.color }} />
+                        <span className="font-semibold" style={{ fontSize: "13px", color: cfg.color }}>{cfg.label}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                <h2 className="font-bold mb-3" style={{ fontSize: "20px" }}>{selectedTask.title}</h2>
+
+                <p className="text-[#6B6B6B] mb-5 leading-relaxed" style={{ fontSize: "15px" }}>{selectedTask.description || "No description provided."}</p>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center gap-3 bg-[#F5F3F0] rounded-xl p-3">
+                    <Calendar className="w-5 h-5 text-[#FE5A00]" />
+                    <div>
+                      <p className="text-[#6B6B6B]" style={{ fontSize: "11px" }}>DEADLINE</p>
+                      <p className="font-semibold" style={{ fontSize: "14px" }}>{selectedTask.deadline}</p>
+                    </div>
+                  </div>
+                  {selectedTask.appointedBy && (
+                    <div className="flex items-center gap-3 bg-[#F5F3F0] rounded-xl p-3">
+                      <User className="w-5 h-5 text-[#FE5A00]" />
+                      <div>
+                        <p className="text-[#6B6B6B]" style={{ fontSize: "11px" }}>APPOINTED BY</p>
+                        <p className="font-semibold" style={{ fontSize: "14px" }}>{selectedTask.appointedBy}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                {/* Task Description */}
-                <div>
-                  <label className="block font-semibold mb-2" style={{ fontSize: "14px" }}>
-                    Description
-                  </label>
-                  <textarea
-                    value={taskDescription}
-                    onChange={(e) => setTaskDescription(e.target.value)}
-                    placeholder="Add task details..."
-                    rows={3}
-                    className="w-full px-4 py-3 bg-[#F5F3F0] rounded-xl border-2 border-transparent focus:border-[#FE5A00] focus:outline-none resize-none transition-colors"
-                    style={{ fontSize: "14px" }}
-                  />
+                <div className="flex gap-3">
+                  <button onClick={() => openEditForm(selectedTask)}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#F5F3F0] rounded-xl font-semibold" style={{ fontSize: "14px" }}>
+                    <Edit2 className="w-4 h-4" /> Edit
+                  </button>
+                  <button onClick={() => handleDelete(selectedTask.id)}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#EF4444]/10 text-[#EF4444] rounded-xl font-semibold" style={{ fontSize: "14px" }}>
+                    <Trash2 className="w-4 h-4" /> Delete
+                  </button>
+                  <button onClick={() => setSelectedTask(null)}
+                    className="w-12 h-12 flex items-center justify-center bg-[#F5F3F0] rounded-xl">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Add/Edit Task Form */}
+      <AnimatePresence>
+        {showForm && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 z-40" onClick={() => setShowForm(false)} />
+            <motion.div
+              initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 320 }}
+              className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 pb-8 overflow-y-auto"
+              style={{ maxHeight: "90vh" }}
+            >
+              <div className="w-10 h-1 bg-black/10 rounded-full mx-auto mt-3 mb-4" />
+              <div className="px-6">
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="font-bold" style={{ fontSize: "20px" }}>{editingTask ? "Edit Task" : "New Task"}</h2>
+                  <button onClick={() => setShowForm(false)} className="w-8 h-8 rounded-full bg-[#F5F3F0] flex items-center justify-center">
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
 
-                {/* Deadline */}
-                <div>
-                  <label className="block font-semibold mb-2" style={{ fontSize: "14px" }}>
-                    Deadline *
-                  </label>
-                  <input
-                    type="text"
-                    value={taskDeadline}
-                    onChange={(e) => setTaskDeadline(e.target.value)}
-                    placeholder="e.g., Today 5PM, Apr 20, Tomorrow"
-                    className="w-full px-4 py-3 bg-[#F5F3F0] rounded-xl border-2 border-transparent focus:border-[#FE5A00] focus:outline-none transition-colors"
-                    style={{ fontSize: "15px" }}
-                  />
-                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block font-semibold mb-1.5" style={{ fontSize: "13px" }}>Task Title *</label>
+                    <input value={formTitle} onChange={(e) => setFormTitle(e.target.value)}
+                      placeholder="e.g., Setup security checkpoint"
+                      className="w-full px-4 py-3 bg-[#F5F3F0] rounded-xl outline-none focus:ring-2 focus:ring-[#FE5A00]"
+                      style={{ fontSize: "15px" }} />
+                  </div>
 
-                {/* Status Selection */}
-                <div>
-                  <label className="block font-semibold mb-3" style={{ fontSize: "14px" }}>
-                    Status
-                  </label>
-                  <div className="grid grid-cols-3 gap-3">
-                    <button
-                      onClick={() => setTaskStatus("urgent")}
-                      className={
-                        taskStatus === "urgent"
-                          ? "py-3 px-4 rounded-xl border-2 transition-all border-[#EF4444] bg-[#EF4444]/10"
-                          : "py-3 px-4 rounded-xl border-2 transition-all border-[#E5E3E0] bg-white hover:border-[#EF4444]/50"
-                      }
-                    >
-                      <AlertCircle className={taskStatus === "urgent" ? "w-5 h-5 mx-auto mb-1 text-[#EF4444]" : "w-5 h-5 mx-auto mb-1 text-[#6B6B6B]"} />
-                      <p className={taskStatus === "urgent" ? "font-semibold text-[#EF4444]" : "font-semibold text-[#6B6B6B]"} style={{ fontSize: "12px" }}>
-                        Urgent
-                      </p>
-                    </button>
+                  <div>
+                    <label className="block font-semibold mb-1.5" style={{ fontSize: "13px" }}>Description</label>
+                    <textarea value={formDesc} onChange={(e) => setFormDesc(e.target.value)}
+                      placeholder="What needs to be done..."
+                      rows={3}
+                      className="w-full px-4 py-3 bg-[#F5F3F0] rounded-xl outline-none resize-none focus:ring-2 focus:ring-[#FE5A00]"
+                      style={{ fontSize: "14px" }} />
+                  </div>
 
-                    <button
-                      onClick={() => setTaskStatus("inProgress")}
-                      className={
-                        taskStatus === "inProgress"
-                          ? "py-3 px-4 rounded-xl border-2 transition-all border-[#F59E0B] bg-[#F59E0B]/10"
-                          : "py-3 px-4 rounded-xl border-2 transition-all border-[#E5E3E0] bg-white hover:border-[#F59E0B]/50"
-                      }
-                    >
-                      <Clock className={taskStatus === "inProgress" ? "w-5 h-5 mx-auto mb-1 text-[#F59E0B]" : "w-5 h-5 mx-auto mb-1 text-[#6B6B6B]"} />
-                      <p className={taskStatus === "inProgress" ? "font-semibold text-[#F59E0B]" : "font-semibold text-[#6B6B6B]"} style={{ fontSize: "12px" }}>
-                        In Progress
-                      </p>
-                    </button>
+                  <div>
+                    <label className="block font-semibold mb-1.5" style={{ fontSize: "13px" }}>Deadline *</label>
+                    <input value={formDeadline} onChange={(e) => setFormDeadline(e.target.value)}
+                      placeholder="e.g., Today 5PM, Apr 20"
+                      className="w-full px-4 py-3 bg-[#F5F3F0] rounded-xl outline-none focus:ring-2 focus:ring-[#FE5A00]"
+                      style={{ fontSize: "15px" }} />
+                  </div>
 
-                    <button
-                      onClick={() => setTaskStatus("completed")}
-                      className={
-                        taskStatus === "completed"
-                          ? "py-3 px-4 rounded-xl border-2 transition-all border-[#10B981] bg-[#10B981]/10"
-                          : "py-3 px-4 rounded-xl border-2 transition-all border-[#E5E3E0] bg-white hover:border-[#10B981]/50"
-                      }
-                    >
-                      <CheckCircle2 className={taskStatus === "completed" ? "w-5 h-5 mx-auto mb-1 text-[#10B981]" : "w-5 h-5 mx-auto mb-1 text-[#6B6B6B]"} />
-                      <p className={taskStatus === "completed" ? "font-semibold text-[#10B981]" : "font-semibold text-[#6B6B6B]"} style={{ fontSize: "12px" }}>
-                        Completed
-                      </p>
-                    </button>
+                  <div>
+                    <label className="block font-semibold mb-1.5" style={{ fontSize: "13px" }}>Appointed By</label>
+                    <input value={formAppointedBy} onChange={(e) => setFormAppointedBy(e.target.value)}
+                      placeholder="e.g., Rajesh Kumar"
+                      className="w-full px-4 py-3 bg-[#F5F3F0] rounded-xl outline-none focus:ring-2 focus:ring-[#FE5A00]"
+                      style={{ fontSize: "15px" }} />
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold mb-2" style={{ fontSize: "13px" }}>Status</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(["upcoming", "inProgress", "completed"] as TaskStatus[]).map((s) => {
+                        const cfg = STATUS_CONFIG[s];
+                        const Icon = cfg.icon;
+                        const active = formStatus === s;
+                        return (
+                          <button key={s} onClick={() => setFormStatus(s)}
+                            className="py-3 px-2 rounded-xl border-2 transition-all text-center"
+                            style={{ borderColor: active ? cfg.color : "#E5E3E0", backgroundColor: active ? cfg.bg : "white" }}>
+                            <Icon className="w-4 h-4 mx-auto mb-1" style={{ color: active ? cfg.color : "#6B6B6B" }} />
+                            <p className="font-semibold" style={{ fontSize: "11px", color: active ? cfg.color : "#6B6B6B" }}>{cfg.label}</p>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-3 mt-6">
-                <button
-                  onClick={() => setShowNewTaskModal(false)}
-                  className="flex-1 py-3 bg-[#F5F3F0] text-black font-semibold rounded-xl hover:bg-[#E5E3E0] transition-colors"
-                  style={{ fontSize: "15px" }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={editingTask ? handleEditTask : handleAddTask}
-                  disabled={!taskTitle.trim() || !taskDeadline.trim()}
-                  className="flex-1 py-3 bg-[#FE5A00] text-white font-semibold rounded-xl hover:bg-[#FE5A00]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ fontSize: "15px" }}
-                >
-                  {editingTask ? "Save Changes" : "Add Task"}
-                </button>
+                <div className="flex gap-3 mt-6">
+                  <button onClick={() => setShowForm(false)}
+                    className="flex-1 py-3 bg-[#F5F3F0] font-semibold rounded-xl" style={{ fontSize: "15px" }}>
+                    Cancel
+                  </button>
+                  <button onClick={handleSave} disabled={!formTitle.trim() || !formDeadline.trim()}
+                    className="flex-1 py-3 bg-[#FE5A00] text-white font-semibold rounded-xl disabled:opacity-50" style={{ fontSize: "15px" }}>
+                    {editingTask ? "Save Changes" : "Add Task"}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </>
