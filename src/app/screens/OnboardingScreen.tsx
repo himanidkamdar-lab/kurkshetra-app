@@ -3,7 +3,7 @@ import { StickFigureReading } from "../components/StickIllustrations";
 
 export default function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
   return (
-    <div className="min-h-screen bg-white flex flex-col px-6 py-12">
+    <div className="h-full bg-white flex flex-col px-6 py-12">
       {/* Step indicator */}
       <div className="flex justify-center gap-2 mb-16">
         <div className="w-2 h-2 rounded-full bg-[#FE5A00]" />

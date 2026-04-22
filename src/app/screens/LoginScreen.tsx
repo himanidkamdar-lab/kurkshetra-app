@@ -44,7 +44,7 @@ export default function LoginScreen({ onLogin }: { onLogin: (role: "member" | "h
   };
 
   return (
-    <div className="min-h-screen bg-[#000000] flex flex-col items-center justify-center px-6 relative overflow-hidden">
+    <div className="h-full bg-[#000000] flex flex-col items-center justify-center px-6 relative overflow-hidden">
       {/* Logo and wordmark */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

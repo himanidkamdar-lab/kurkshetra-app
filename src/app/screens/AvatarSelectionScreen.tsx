@@ -38,7 +38,7 @@ export default function AvatarSelectionScreen({ onComplete }: AvatarSelectionScr
   };
 
   return (
-    <div className="bg-[#F5F3F0] flex flex-col" style={{ minHeight: "100%", overflowY: "auto" }}>
+    <div className="bg-[#F5F3F0] flex flex-col" style={{ minHeight: "100%", paddingBottom: "env(safe-area-inset-bottom)" }}>
       {/* Header */}
       <div className="px-6 pt-10 pb-4 text-center">
         <motion.h1
