@@ -1,6 +1,17 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { User, History, Package, Bell, HelpCircle, LogOut, FileText } from "lucide-react";
+import avatar1 from "../../imports/image-3.png";
+import avatar2 from "../../imports/image-4.png";
+import avatar3 from "../../imports/image-5.png";
+import avatar4 from "../../imports/image-6.png";
+import avatar5 from "../../imports/image-7.png";
+import avatar6 from "../../imports/image-8.png";
+import avatar7 from "../../imports/image-9.png";
+import avatar8 from "../../imports/image-10.png";
+import avatar9 from "../../imports/image-11.png";
+
+const AVATARS = [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6, avatar7, avatar8, avatar9];
 
 interface ProfileDropdownProps {
   onNavigate: (screen: string) => void;
@@ -19,9 +30,11 @@ export function ProfileDropdown({
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
 
   useEffect(() => {
-    // Get the selected avatar from localStorage
-    const savedAvatar = localStorage.getItem("userAvatar");
-    setUserAvatar(savedAvatar);
+    const idx = localStorage.getItem("userAvatarIndex");
+    if (idx !== null) {
+      const i = parseInt(idx, 10);
+      setUserAvatar(AVATARS[i] ?? null);
+    }
   }, []);
 
   const menuItems = [
@@ -38,15 +51,15 @@ export function ProfileDropdown({
       {/* Avatar Button */}
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FE5A00] to-[#FF7A2F] text-white font-bold flex items-center justify-center shadow-md hover:shadow-lg transition-all overflow-hidden"
-        style={{ fontSize: "14px" }}
+        className="w-10 h-10 rounded-full text-white font-bold flex items-center justify-center shadow-md hover:shadow-lg transition-all overflow-hidden"
+        style={{ fontSize: "14px", background: userAvatar ? "white" : "linear-gradient(135deg, #FE5A00, #FF7A2F)", border: userAvatar ? "2px solid #FE5A00" : "none" }}
       >
         {userAvatar ? (
-          <img 
-            src={userAvatar} 
+          <img
+            src={userAvatar}
             alt={userName}
-            className="w-full h-full object-cover"
-            style={{ mixBlendMode: "normal" }}
+            className="w-full h-full object-contain p-0.5"
+            style={{ mixBlendMode: "multiply" }}
           />
         ) : (
           userInitials
@@ -66,13 +79,16 @@ export function ProfileDropdown({
             {/* User Info Header */}
             <div className="p-5 border-b border-black/5 bg-gradient-to-br from-[#F5F3F0] to-white">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FE5A00] to-[#FF7A2F] text-white font-bold flex items-center justify-center overflow-hidden" style={{ fontSize: "16px" }}>
+                <div
+                  className="w-12 h-12 rounded-full text-white font-bold flex items-center justify-center overflow-hidden"
+                  style={{ fontSize: "16px", background: userAvatar ? "white" : "linear-gradient(135deg, #FE5A00, #FF7A2F)", border: userAvatar ? "2px solid #FE5A00" : "none" }}
+                >
                   {userAvatar ? (
-                    <img 
-                      src={userAvatar} 
+                    <img
+                      src={userAvatar}
                       alt={userName}
-                      className="w-full h-full object-cover"
-                      style={{ mixBlendMode: "normal" }}
+                      className="w-full h-full object-contain p-1"
+                      style={{ mixBlendMode: "multiply" }}
                     />
                   ) : (
                     userInitials

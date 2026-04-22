@@ -33,7 +33,7 @@ export default function AvatarSelectionScreen({ onComplete }: AvatarSelectionScr
 
   const handleContinue = () => {
     // Store selected avatar in localStorage or state management
-    localStorage.setItem("userAvatar", avatars[selectedAvatar].src);
+    localStorage.setItem("userAvatarIndex", String(selectedAvatar));
     onComplete();
   };
 
