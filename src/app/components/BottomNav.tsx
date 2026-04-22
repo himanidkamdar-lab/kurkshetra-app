@@ -15,8 +15,8 @@ export function BottomNav({ active, onNavigate }: BottomNavProps) {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-black/5 px-4 pb-6 pt-3">
-      <div className="flex items-center justify-between max-w-md mx-auto">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-black/5 px-4 pb-6 pt-3" style={{ width: 375 }}>
+      <div className="flex items-center justify-between">
         {items.map((item) => {
           const Icon = item.icon;
           const isActive = active === item.id;
