@@ -110,7 +110,7 @@ export default function CommitteesScreen({ onNavigate }: CommitteesScreenProps) 
       {/* Header */}
       <div className="bg-white px-4 md:px-6 py-4 border-b border-black/5">
         <div className="flex items-center gap-4 max-w-5xl mx-auto">
-          <button onClick={() => onNavigate("more")}>
+          <button onClick={() => onNavigate("dashboard")}>
             <ArrowLeft className="w-6 h-6" />
           </button>
           <div className="flex-1">

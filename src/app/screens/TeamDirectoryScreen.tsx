@@ -223,7 +223,7 @@ export default function TeamDirectoryScreen({ onNavigate }: TeamDirectoryScreenP
       {/* Header */}
       <div className="bg-white px-4 py-4 border-b border-black/5 sticky top-0 z-20">
         <div className="flex items-center gap-4">
-          <button onClick={() => selectedDept ? setSelectedDept(null) : onNavigate("more")}>
+          <button onClick={() => selectedDept ? setSelectedDept(null) : onNavigate("dashboard")}>
             <ArrowLeft className="w-6 h-6" />
           </button>
           <div className="flex-1">
