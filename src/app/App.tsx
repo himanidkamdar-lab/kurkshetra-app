@@ -184,7 +184,7 @@ export default function App() {
   };
 
   return (
-    <div className="size-full relative bg-[#F5F3F0]">
+    <div className="size-full relative bg-[#F5F3F0]" style={{ overflowY: "auto", height: "100%" }}>
       {/* Screen Routing */}
       {currentScreen === "login" && <LoginScreen onLogin={handleLogin} />}
       {currentScreen === "onboarding" && <OnboardingScreen onComplete={handleOnboardingComplete} />}
