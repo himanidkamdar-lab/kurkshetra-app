@@ -1,78 +1,41 @@
-import { motion } from "motion/react";
-import { Search, ArrowLeft, MessageSquare } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { Search, ArrowLeft, MessageSquare, PenSquare, X } from "lucide-react";
+import { useState } from "react";
 import { BottomNav } from "../components/BottomNav";
-import avatar1 from "../../imports/image-3.png";
-import avatar2 from "../../imports/image-4.png";
-import avatar3 from "../../imports/image-5.png";
-import avatar4 from "../../imports/image-6.png";
+import type { Contact, ChatMessage } from "../App";
 
 interface ChatListScreenProps {
   onNavigate: (screen: string) => void;
-  onOpenChat: (headId: string) => void;
+  onOpenChat: (contactId: string) => void;
+  contacts: Contact[];
+  chatMessages: Record<string, ChatMessage[]>;
 }
 
-export default function ChatListScreen({ onNavigate, onOpenChat }: ChatListScreenProps) {
-  const chats = [
-    {
-      id: "head-cultural",
-      name: "Priya Sharma",
-      role: "Cultural HOD",
-      avatar: avatar1,
-      lastMessage: "Great work on the stage setup!",
-      time: "2:30 PM",
-      unread: 2,
-      online: true,
-      color: "#8B5CF6",
-    },
-    {
-      id: "head-security",
-      name: "Rajesh Kumar",
-      role: "Security CC Head",
-      avatar: avatar2,
-      lastMessage: "Please check the gate assignments",
-      time: "1:15 PM",
-      unread: 0,
-      online: true,
-      color: "#10B981",
-    },
-    {
-      id: "head-hospitality",
-      name: "Ananya Verma",
-      role: "Hospitality HOD",
-      avatar: avatar3,
-      lastMessage: "Menu review at 4 PM tomorrow",
-      time: "Yesterday",
-      unread: 0,
-      online: false,
-      color: "#F59E0B",
-    },
-    {
-      id: "head-tech",
-      name: "Vikram Singh",
-      role: "IT & Tech HOD",
-      avatar: avatar4,
-      lastMessage: "WiFi configuration is complete",
-      time: "Apr 13",
-      unread: 0,
-      online: false,
-      color: "#EC4899",
-    },
-  ];
+export default function ChatListScreen({ onNavigate, onOpenChat, contacts, chatMessages }: ChatListScreenProps) {
+  const [search, setSearch] = useState("");
+  const [showCompose, setShowCompose] = useState(false);
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
+  // Build chat list from contacts that have messages, sorted by last message time
+  const existingChats = contacts.filter((c) => chatMessages[c.id]?.length > 0);
+
+  const getLastMessage = (contactId: string) => {
+    const msgs = chatMessages[contactId];
+    if (!msgs || msgs.length === 0) return { text: "No messages yet", time: "" };
+    const last = msgs[msgs.length - 1];
+    return { text: last.sender === "me" ? `You: ${last.text}` : last.text, time: last.time };
   };
 
-  const item = {
-    hidden: { opacity: 0, y: 10 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } },
+  const getUnread = (contactId: string) => {
+    const msgs = chatMessages[contactId] || [];
+    return msgs.filter((m) => m.sender === "other" && !m.read).length;
   };
+
+  const filteredChats = existingChats.filter(
+    (c) => c.name.toLowerCase().includes(search.toLowerCase()) || c.role.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Contacts not yet in a chat — available for new chats
+  const newChatContacts = contacts.filter((c) => !chatMessages[c.id]?.length);
 
   return (
     <div className="min-h-screen bg-white pb-24">
@@ -85,135 +48,134 @@ export default function ChatListScreen({ onNavigate, onOpenChat }: ChatListScree
           <h1 className="font-semibold flex-1" style={{ fontSize: "22px" }}>
             Messages
           </h1>
+          <button
+            onClick={() => setShowCompose(true)}
+            className="w-10 h-10 rounded-full bg-[#FE5A00]/10 flex items-center justify-center"
+          >
+            <PenSquare className="w-5 h-5 text-[#FE5A00]" />
+          </button>
         </div>
 
-        {/* Search bar */}
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6B6B6B]" />
           <input
             type="text"
             placeholder="Search messages..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-[#F5F3F0] rounded-xl pl-12 pr-4 py-3 outline-none"
             style={{ fontSize: "16px" }}
           />
         </div>
       </div>
 
-      {/* Info banner */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="mx-6 my-4 p-4 bg-[#FE5A00]/5 rounded-2xl border border-[#FE5A00]/10"
-      >
-        <div className="flex items-start gap-3">
-          <MessageSquare className="w-5 h-5 text-[#FE5A00] flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-black font-medium" style={{ fontSize: "14px" }}>
-              Direct messaging with your heads
-            </p>
-            <p className="text-[#6B6B6B] mt-1" style={{ fontSize: "13px" }}>
-              Get quick responses and stay connected with your department leadership
-            </p>
-          </div>
-        </div>
-      </motion.div>
-
       {/* Chat list */}
-      <motion.div variants={container} initial="hidden" animate="show">
-        {chats.map((chat) => (
-          <motion.button
-            key={chat.id}
-            variants={item}
-            onClick={() => onOpenChat(chat.id)}
-            className="w-full px-6 py-4 border-b border-black/5 hover:bg-[#F5F3F0]/50 transition-colors text-left"
-          >
-            <div className="flex items-start gap-4">
-              {/* Left indicator for unread */}
-              <div
-                className={`w-1 h-full -ml-6 flex-shrink-0 ${
-                  chat.unread > 0 ? "bg-[#FE5A00]" : ""
-                }`}
-              />
-
-              {/* Avatar with online indicator */}
-              <div className="relative flex-shrink-0">
-                <div
-                  className="w-12 h-12 rounded-full overflow-hidden"
-                  style={{ backgroundColor: `${chat.color}20` }}
-                >
-                  <img
-                    src={chat.avatar}
-                    alt={chat.name}
-                    className="w-full h-full object-contain"
-                    style={{ mixBlendMode: "multiply" }}
-                  />
-                </div>
-                {chat.online && (
-                  <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#10B981] rounded-full border-2 border-white" />
-                )}
-              </div>
-
-              {/* Chat info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between mb-1">
-                  <div>
-                    <h3
-                      className={`font-semibold ${
-                        chat.unread > 0 ? "text-black" : "text-black"
-                      }`}
-                      style={{ fontSize: "16px" }}
-                    >
-                      {chat.name}
-                    </h3>
-                    <p className="text-[#6B6B6B]" style={{ fontSize: "12px" }}>
-                      {chat.role}
-                    </p>
-                  </div>
-                  <span className="text-[#6B6B6B] flex-shrink-0 ml-2" style={{ fontSize: "13px" }}>
-                    {chat.time}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between mt-1">
-                  <p
-                    className={`truncate ${
-                      chat.unread > 0 ? "text-black font-medium" : "text-[#6B6B6B]"
-                    }`}
-                    style={{ fontSize: "14px" }}
-                  >
-                    {chat.lastMessage}
-                  </p>
-
-                  {/* Unread badge */}
-                  {chat.unread > 0 && (
-                    <div className="w-6 h-6 rounded-full bg-[#FE5A00] flex items-center justify-center flex-shrink-0 ml-2">
-                      <span className="text-white font-semibold" style={{ fontSize: "11px" }}>
-                        {chat.unread}
-                      </span>
+      {filteredChats.length > 0 ? (
+        <motion.div initial="hidden" animate="show" variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.05 } } }}>
+          {filteredChats.map((contact) => {
+            const last = getLastMessage(contact.id);
+            const unread = getUnread(contact.id);
+            return (
+              <motion.button
+                key={contact.id}
+                variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.3 } } }}
+                onClick={() => onOpenChat(contact.id)}
+                className="w-full px-6 py-4 border-b border-black/5 hover:bg-[#F5F3F0]/50 transition-colors text-left"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="relative flex-shrink-0">
+                    <div className="w-12 h-12 rounded-full overflow-hidden" style={{ backgroundColor: `${contact.color}20` }}>
+                      <img src={contact.avatarSrc} alt={contact.name} className="w-full h-full object-contain" style={{ mixBlendMode: "multiply" }} />
                     </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </motion.button>
-        ))}
-      </motion.div>
+                    {contact.online && (
+                      <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#10B981] rounded-full border-2 border-white" />
+                    )}
+                  </div>
 
-      {/* Empty state for no more chats */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="px-6 py-12 text-center"
-      >
-        <div className="w-16 h-16 mx-auto mb-4 bg-[#F5F3F0] rounded-full flex items-center justify-center">
-          <MessageSquare className="w-8 h-8 text-[#6B6B6B]" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between mb-1">
+                      <div>
+                        <h3 className="font-semibold" style={{ fontSize: "16px" }}>{contact.name}</h3>
+                        <p className="text-[#6B6B6B]" style={{ fontSize: "12px" }}>{contact.role}</p>
+                      </div>
+                      <span className="text-[#6B6B6B] flex-shrink-0 ml-2" style={{ fontSize: "13px" }}>{last.time}</span>
+                    </div>
+                    <div className="flex items-center justify-between mt-1">
+                      <p className={`truncate ${unread > 0 ? "text-black font-medium" : "text-[#6B6B6B]"}`} style={{ fontSize: "14px" }}>
+                        {last.text}
+                      </p>
+                      {unread > 0 && (
+                        <div className="w-6 h-6 rounded-full bg-[#FE5A00] flex items-center justify-center flex-shrink-0 ml-2">
+                          <span className="text-white font-semibold" style={{ fontSize: "11px" }}>{unread}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </motion.button>
+            );
+          })}
+        </motion.div>
+      ) : (
+        <div className="px-6 py-12 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 bg-[#F5F3F0] rounded-full flex items-center justify-center">
+            <MessageSquare className="w-8 h-8 text-[#6B6B6B]" />
+          </div>
+          <p className="text-[#6B6B6B] font-semibold mb-1" style={{ fontSize: "16px" }}>No messages yet</p>
+          <p className="text-[#6B6B6B]" style={{ fontSize: "14px" }}>Tap the pencil icon to start a new chat</p>
         </div>
-        <p className="text-[#6B6B6B]" style={{ fontSize: "14px" }}>
-          You're all caught up!
-        </p>
-      </motion.div>
+      )}
+
+      {/* New Chat Modal */}
+      <AnimatePresence>
+        {showCompose && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowCompose(false)}
+              className="fixed inset-0 bg-black/40 z-40"
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 pb-8"
+              style={{ maxHeight: "70vh" }}
+            >
+              <div className="flex items-center justify-between px-6 py-4 border-b border-black/5">
+                <h2 className="font-semibold" style={{ fontSize: "18px" }}>New Message</h2>
+                <button onClick={() => setShowCompose(false)} className="w-8 h-8 rounded-full bg-[#F5F3F0] flex items-center justify-center">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <p className="px-6 pt-4 pb-2 text-[#6B6B6B] font-semibold uppercase" style={{ fontSize: "12px" }}>Select a contact</p>
+
+              <div className="overflow-y-auto" style={{ maxHeight: "50vh" }}>
+                {contacts.map((contact) => (
+                  <button
+                    key={contact.id}
+                    onClick={() => { setShowCompose(false); onOpenChat(contact.id); }}
+                    className="w-full flex items-center gap-4 px-6 py-3 hover:bg-[#F5F3F0] transition-colors"
+                  >
+                    <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0" style={{ backgroundColor: `${contact.color}20` }}>
+                      <img src={contact.avatarSrc} alt={contact.name} className="w-full h-full object-contain" style={{ mixBlendMode: "multiply" }} />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-semibold" style={{ fontSize: "15px" }}>{contact.name}</p>
+                      <p className="text-[#6B6B6B]" style={{ fontSize: "13px" }}>{contact.role}</p>
+                    </div>
+                    {contact.online && <div className="ml-auto w-2 h-2 rounded-full bg-[#10B981]" />}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <BottomNav active="channels" onNavigate={onNavigate} />
     </div>
