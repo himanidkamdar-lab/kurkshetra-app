@@ -11,7 +11,7 @@ export function BottomNav({ active, onNavigate }: BottomNavProps) {
     { id: "tasks", label: "Tasks", icon: CheckSquare, screen: "tasks" },
     { id: "channels", label: "Channels", icon: MessageCircle, screen: "channels" },
     { id: "requests", label: "Requests", icon: ClipboardCheck, screen: "equipment-request" },
-    { id: "committees", label: "Committees", icon: Users, screen: "committees" },
+    { id: "committees", label: "Repository", icon: Users, screen: "committees" },
   ];
 
   return (
