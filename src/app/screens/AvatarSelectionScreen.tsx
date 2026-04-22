@@ -38,9 +38,9 @@ export default function AvatarSelectionScreen({ onComplete }: AvatarSelectionScr
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F3F0] flex flex-col">
+    <div className="bg-[#F5F3F0] flex flex-col" style={{ minHeight: "100%", overflowY: "auto" }}>
       {/* Header */}
-      <div className="px-6 pt-12 pb-6 text-center">
+      <div className="px-6 pt-10 pb-4 text-center">
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -61,7 +61,7 @@ export default function AvatarSelectionScreen({ onComplete }: AvatarSelectionScr
       </div>
 
       {/* Main Avatar Display */}
-      <div className="flex-1 flex items-center justify-center px-6 py-8">
+      <div className="flex items-center justify-center px-6 py-4">
         <motion.div
           key={selectedAvatar}
           initial={{ scale: 0.8, opacity: 0 }}
@@ -72,13 +72,13 @@ export default function AvatarSelectionScreen({ onComplete }: AvatarSelectionScr
           {/* Decorative Circle Background */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div
-              className="w-72 h-72 rounded-full opacity-10"
+              className="w-48 h-48 rounded-full opacity-10"
               style={{ backgroundColor: "#FE5A00" }}
             />
           </div>
 
           {/* Avatar Image */}
-          <div className="relative z-10 w-64 h-64 rounded-full overflow-hidden bg-white shadow-lg flex items-center justify-center">
+          <div className="relative z-10 w-44 h-44 rounded-full overflow-hidden bg-white shadow-lg flex items-center justify-center">
             <img
               src={avatars[selectedAvatar].src}
               alt={avatars[selectedAvatar].name}
@@ -105,7 +105,7 @@ export default function AvatarSelectionScreen({ onComplete }: AvatarSelectionScr
       </div>
 
       {/* Avatar Selection Grid */}
-      <div className="px-6 pb-6">
+      <div className="px-6 pb-4">
         <div className="bg-white rounded-3xl p-4 shadow-lg">
           <p className="text-[#6B6B6B] text-center mb-4" style={{ fontSize: "13px" }}>
             Tap to switch avatars
