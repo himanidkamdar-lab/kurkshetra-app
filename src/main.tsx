@@ -1,12 +1,10 @@
 
   import { createRoot } from "react-dom/client";
   import App from "./app/App.tsx";
-  import IPhoneFrame from "./app/components/IPhoneFrame.tsx";
   import "./styles/index.css";
 
   createRoot(document.getElementById("root")!).render(
-    <IPhoneFrame>
+    <div style={{ width: 375, height: 849, overflow: "hidden", position: "relative", margin: "0 auto" }}>
       <App />
-    </IPhoneFrame>
+    </div>
   );
-  
