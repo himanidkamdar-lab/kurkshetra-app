@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { ArrowLeft, Search, Phone, Mail, Shield, Crown, Users, Star, ChevronRight, UserCircle } from "lucide-react";
+import { ArrowLeft, Search, Phone, Mail, Shield, Crown, Users, Star, ChevronRight, UserCircle, DollarSign, TrendingUp, Megaphone, Palette, Code, Package2, Utensils, Music, Trophy } from "lucide-react";
 import { BottomNav } from "../components/BottomNav";
 import { ProfileDropdown } from "../components/ProfileDropdown";
 import { useState } from "react";
@@ -12,18 +12,18 @@ export default function TeamDirectoryScreen({ onNavigate }: TeamDirectoryScreenP
   const [selectedDept, setSelectedDept] = useState<string | null>(null);
 
   const committees = [
-    { id: "security", name: "Security", icon: Shield, color: "#3B82F6" },
-    { id: "sponsorship", name: "Sponsorship", icon: Star, color: "#F59E0B" },
-    { id: "marketing", name: "Marketing", icon: Users, color: "#EC4899" },
-    { id: "hospitality", name: "Hospitality", icon: Users, color: "#10B981" },
-    { id: "tech", name: "Tech", icon: Users, color: "#8B5CF6" },
-    { id: "design", name: "Design", icon: Users, color: "#FE5A00" },
-    { id: "pr", name: "PR", icon: Users, color: "#06B6D4" },
-    { id: "logistics", name: "Logistics", icon: Users, color: "#EF4444" },
-    { id: "finance", name: "Finance", icon: Users, color: "#84CC16" },
-    { id: "cultural", name: "Cultural", icon: Users, color: "#A855F7" },
-    { id: "sports", name: "Sports", icon: Users, color: "#F97316" },
-    { id: "food", name: "Food", icon: Users, color: "#14B8A6" },
+    { id: "security",    name: "Security",    icon: Shield,    color: "#3B82F6" },
+    { id: "sponsorship", name: "Sponsorship", icon: DollarSign,color: "#F59E0B" },
+    { id: "marketing",   name: "Marketing",   icon: TrendingUp,color: "#EC4899" },
+    { id: "hospitality", name: "Hospitality", icon: Users,     color: "#10B981" },
+    { id: "tech",        name: "Tech",        icon: Code,      color: "#8B5CF6" },
+    { id: "design",      name: "Design",      icon: Palette,   color: "#FE5A00" },
+    { id: "pr",          name: "PR",          icon: Megaphone, color: "#06B6D4" },
+    { id: "logistics",   name: "Logistics",   icon: Package2,  color: "#EF4444" },
+    { id: "finance",     name: "Finance",     icon: Crown,     color: "#84CC16" },
+    { id: "cultural",    name: "Cultural",    icon: Music,     color: "#A855F7" },
+    { id: "sports",      name: "Sports",      icon: Trophy,    color: "#F97316" },
+    { id: "food",        name: "Food",        icon: Utensils,  color: "#14B8A6" },
   ];
 
   const teamData: Record<string, {
