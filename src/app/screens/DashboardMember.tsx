@@ -281,94 +281,76 @@ export default function DashboardMember({ onNavigate }: { onNavigate: (screen: s
         {/* Festival Countdown - Minimalist & Clean */}
         <motion.div
           variants={item}
-          className="bg-white rounded-2xl pl-6 pr-8 py-6"
+          className="bg-white rounded-2xl p-5"
         >
-          <div className="text-center mb-4">
-            <p className="text-[#6B6B6B] font-semibold tracking-wide mb-1" style={{ fontSize: "11px" }}>
+          <div className="text-center mb-3">
+            <p className="text-[#6B6B6B] font-semibold tracking-wide mb-1" style={{ fontSize: "10px" }}>
               KURUKSHETRA 2026
             </p>
-            <h2 className="font-bold" style={{ fontSize: "20px" }}>
+            <h2 className="font-bold" style={{ fontSize: "17px" }}>
               Festival Begins In
             </h2>
           </div>
 
           {/* Clean Timer */}
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-1.5">
             {/* Hours */}
             <div className="flex items-center gap-1">
-              <motion.div
-                animate={{ opacity: [1, 0.9, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="bg-[#FE5A00]/10 rounded-2xl px-3 py-4 shadow-md border border-[#FE5A00]/20"
-              >
-                <div className="font-bold tabular-nums" style={{ fontSize: "32px", lineHeight: "1" }}>
-                  {String(timeLeft.hours).padStart(2, '0')[0]}
-                </div>
-              </motion.div>
-              <motion.div
-                animate={{ opacity: [1, 0.9, 1] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 0.1 }}
-                className="bg-[#FE5A00]/10 rounded-2xl px-3 py-4 shadow-md border border-[#FE5A00]/20"
-              >
-                <div className="font-bold tabular-nums" style={{ fontSize: "32px", lineHeight: "1" }}>
-                  {String(timeLeft.hours).padStart(2, '0')[1]}
-                </div>
-              </motion.div>
+              {[0, 1].map((i) => (
+                <motion.div
+                  key={`h${i}`}
+                  animate={{ opacity: [1, 0.9, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
+                  className="bg-[#FE5A00]/10 rounded-xl px-2 py-2.5 border border-[#FE5A00]/20"
+                >
+                  <div className="font-bold tabular-nums" style={{ fontSize: "22px", lineHeight: "1" }}>
+                    {String(timeLeft.hours).padStart(2, '0')[i]}
+                  </div>
+                </motion.div>
+              ))}
             </div>
 
-            <span className="font-bold text-[#6B6B6B] mb-2" style={{ fontSize: "24px" }}>:</span>
+            <span className="font-bold text-[#6B6B6B] pb-1" style={{ fontSize: "18px" }}>:</span>
 
             {/* Minutes */}
             <div className="flex items-center gap-1">
-              <motion.div
-                animate={{ opacity: [1, 0.9, 1] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
-                className="bg-[#FE5A00]/10 rounded-2xl px-3 py-4 shadow-md border border-[#FE5A00]/20"
-              >
-                <div className="font-bold tabular-nums" style={{ fontSize: "32px", lineHeight: "1" }}>
-                  {String(timeLeft.minutes).padStart(2, '0')[0]}
-                </div>
-              </motion.div>
-              <motion.div
-                animate={{ opacity: [1, 0.9, 1] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
-                className="bg-[#FE5A00]/10 rounded-2xl px-3 py-4 shadow-md border border-[#FE5A00]/20"
-              >
-                <div className="font-bold tabular-nums" style={{ fontSize: "32px", lineHeight: "1" }}>
-                  {String(timeLeft.minutes).padStart(2, '0')[1]}
-                </div>
-              </motion.div>
+              {[0, 1].map((i) => (
+                <motion.div
+                  key={`m${i}`}
+                  animate={{ opacity: [1, 0.9, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: 0.2 + i * 0.1 }}
+                  className="bg-[#FE5A00]/10 rounded-xl px-2 py-2.5 border border-[#FE5A00]/20"
+                >
+                  <div className="font-bold tabular-nums" style={{ fontSize: "22px", lineHeight: "1" }}>
+                    {String(timeLeft.minutes).padStart(2, '0')[i]}
+                  </div>
+                </motion.div>
+              ))}
             </div>
 
-            <span className="font-bold text-[#6B6B6B] mb-2" style={{ fontSize: "24px" }}>:</span>
+            <span className="font-bold text-[#6B6B6B] pb-1" style={{ fontSize: "18px" }}>:</span>
 
             {/* Seconds */}
             <div className="flex items-center gap-1">
-              <motion.div
-                animate={{ opacity: [1, 0.9, 1] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 0.4 }}
-                className="bg-[#FE5A00]/10 rounded-2xl px-3 py-4 shadow-md border border-[#FE5A00]/20"
-              >
-                <div className="font-bold tabular-nums" style={{ fontSize: "32px", lineHeight: "1" }}>
-                  {String(timeLeft.seconds).padStart(2, '0')[0]}
-                </div>
-              </motion.div>
-              <motion.div
-                animate={{ opacity: [1, 0.9, 1] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                className="bg-[#FE5A00]/10 rounded-2xl px-3 py-4 shadow-md border border-[#FE5A00]/20"
-              >
-                <div className="font-bold tabular-nums" style={{ fontSize: "32px", lineHeight: "1" }}>
-                  {String(timeLeft.seconds).padStart(2, '0')[1]}
-                </div>
-              </motion.div>
+              {[0, 1].map((i) => (
+                <motion.div
+                  key={`s${i}`}
+                  animate={{ opacity: [1, 0.9, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: 0.4 + i * 0.1 }}
+                  className="bg-[#FE5A00]/10 rounded-xl px-2 py-2.5 border border-[#FE5A00]/20"
+                >
+                  <div className="font-bold tabular-nums" style={{ fontSize: "22px", lineHeight: "1" }}>
+                    {String(timeLeft.seconds).padStart(2, '0')[i]}
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </div>
 
-          <div className="flex justify-center gap-8 mt-3">
-            <span className="text-[#6B6B6B] font-semibold tracking-wider" style={{ fontSize: "11px" }}>HOURS</span>
-            <span className="text-[#6B6B6B] font-semibold tracking-wider" style={{ fontSize: "11px" }}>MINUTES</span>
-            <span className="text-[#6B6B6B] font-semibold tracking-wider" style={{ fontSize: "11px" }}>SECONDS</span>
+          <div className="flex justify-center gap-6 mt-2.5">
+            <span className="text-[#6B6B6B] font-semibold tracking-wider" style={{ fontSize: "10px" }}>HOURS</span>
+            <span className="text-[#6B6B6B] font-semibold tracking-wider" style={{ fontSize: "10px" }}>MINUTES</span>
+            <span className="text-[#6B6B6B] font-semibold tracking-wider" style={{ fontSize: "10px" }}>SECONDS</span>
           </div>
         </motion.div>
 
