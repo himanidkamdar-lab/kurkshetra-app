@@ -281,77 +281,107 @@ export default function DashboardMember({ onNavigate }: { onNavigate: (screen: s
         {/* Festival Countdown - Minimalist & Clean */}
         <motion.div
           variants={item}
-          className="bg-white rounded-2xl p-5"
+          className="rounded-2xl overflow-hidden"
+          style={{
+            background: "#111111",
+            borderTop: "3px solid #FE5A00",
+            boxShadow: "0 0 32px rgba(254,90,0,0.18), 0 4px 24px rgba(0,0,0,0.4)",
+          }}
         >
-          <div className="text-center mb-3">
-            <p className="text-[#6B6B6B] font-semibold tracking-wide mb-1" style={{ fontSize: "10px" }}>
+          {/* Header */}
+          <div className="text-center pt-5 pb-4 px-5">
+            <p className="font-bold tracking-widest" style={{ fontSize: "10px", color: "#FE5A00", letterSpacing: "0.2em" }}>
               KURUKSHETRA 2026
             </p>
-            <h2 className="font-bold" style={{ fontSize: "17px" }}>
+            <h2 className="font-bold mt-1" style={{ fontSize: "18px", color: "#FFFFFF" }}>
               Festival Begins In
             </h2>
           </div>
 
-          {/* Clean Timer */}
-          <div className="flex items-center justify-center gap-1.5">
+          {/* Digits */}
+          <div className="flex items-center justify-center gap-2 px-5 pb-3">
             {/* Hours */}
-            <div className="flex items-center gap-1">
-              {[0, 1].map((i) => (
-                <motion.div
-                  key={`h${i}`}
-                  animate={{ opacity: [1, 0.9, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
-                  className="bg-[#FE5A00]/10 rounded-xl px-2 py-2.5 border border-[#FE5A00]/20"
-                >
-                  <div className="font-bold tabular-nums" style={{ fontSize: "22px", lineHeight: "1" }}>
-                    {String(timeLeft.hours).padStart(2, '0')[i]}
-                  </div>
-                </motion.div>
-              ))}
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                {[0, 1].map((i) => (
+                  <motion.div
+                    key={`h${i}`}
+                    animate={{ opacity: [1, 0.85, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
+                    className="flex items-center justify-center"
+                    style={{
+                      width: 44, height: 56,
+                      background: "#1A1A1A",
+                      borderRadius: 8,
+                      border: "1px solid rgba(255,255,255,0.08)",
+                    }}
+                  >
+                    <span className="font-black tabular-nums" style={{ fontSize: "40px", lineHeight: 1, color: "#FFFFFF" }}>
+                      {String(timeLeft.hours).padStart(2, '0')[i]}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+              <span style={{ fontSize: "9px", color: "#6B6B6B", letterSpacing: "0.15em", fontWeight: 700 }}>HOURS</span>
             </div>
 
-            <span className="font-bold text-[#6B6B6B] pb-1" style={{ fontSize: "18px" }}>:</span>
+            <span className="font-black pb-5" style={{ fontSize: "28px", color: "#FE5A00" }}>:</span>
 
             {/* Minutes */}
-            <div className="flex items-center gap-1">
-              {[0, 1].map((i) => (
-                <motion.div
-                  key={`m${i}`}
-                  animate={{ opacity: [1, 0.9, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: 0.2 + i * 0.1 }}
-                  className="bg-[#FE5A00]/10 rounded-xl px-2 py-2.5 border border-[#FE5A00]/20"
-                >
-                  <div className="font-bold tabular-nums" style={{ fontSize: "22px", lineHeight: "1" }}>
-                    {String(timeLeft.minutes).padStart(2, '0')[i]}
-                  </div>
-                </motion.div>
-              ))}
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                {[0, 1].map((i) => (
+                  <motion.div
+                    key={`m${i}`}
+                    animate={{ opacity: [1, 0.85, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.2 + i * 0.1 }}
+                    className="flex items-center justify-center"
+                    style={{
+                      width: 44, height: 56,
+                      background: "#1A1A1A",
+                      borderRadius: 8,
+                      border: "1px solid rgba(255,255,255,0.08)",
+                    }}
+                  >
+                    <span className="font-black tabular-nums" style={{ fontSize: "40px", lineHeight: 1, color: "#FFFFFF" }}>
+                      {String(timeLeft.minutes).padStart(2, '0')[i]}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+              <span style={{ fontSize: "9px", color: "#6B6B6B", letterSpacing: "0.15em", fontWeight: 700 }}>MINUTES</span>
             </div>
 
-            <span className="font-bold text-[#6B6B6B] pb-1" style={{ fontSize: "18px" }}>:</span>
+            <span className="font-black pb-5" style={{ fontSize: "28px", color: "#FE5A00" }}>:</span>
 
             {/* Seconds */}
-            <div className="flex items-center gap-1">
-              {[0, 1].map((i) => (
-                <motion.div
-                  key={`s${i}`}
-                  animate={{ opacity: [1, 0.9, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: 0.4 + i * 0.1 }}
-                  className="bg-[#FE5A00]/10 rounded-xl px-2 py-2.5 border border-[#FE5A00]/20"
-                >
-                  <div className="font-bold tabular-nums" style={{ fontSize: "22px", lineHeight: "1" }}>
-                    {String(timeLeft.seconds).padStart(2, '0')[i]}
-                  </div>
-                </motion.div>
-              ))}
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                {[0, 1].map((i) => (
+                  <motion.div
+                    key={`s${i}`}
+                    animate={{ opacity: [1, 0.85, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.4 + i * 0.1 }}
+                    className="flex items-center justify-center"
+                    style={{
+                      width: 44, height: 56,
+                      background: "#1A1A1A",
+                      borderRadius: 8,
+                      border: "1px solid rgba(255,255,255,0.08)",
+                    }}
+                  >
+                    <span className="font-black tabular-nums" style={{ fontSize: "40px", lineHeight: 1, color: "#FFFFFF" }}>
+                      {String(timeLeft.seconds).padStart(2, '0')[i]}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+              <span style={{ fontSize: "9px", color: "#6B6B6B", letterSpacing: "0.15em", fontWeight: 700 }}>SECONDS</span>
             </div>
           </div>
 
-          <div className="flex justify-center gap-6 mt-2.5">
-            <span className="text-[#6B6B6B] font-semibold tracking-wider" style={{ fontSize: "10px" }}>HOURS</span>
-            <span className="text-[#6B6B6B] font-semibold tracking-wider" style={{ fontSize: "10px" }}>MINUTES</span>
-            <span className="text-[#6B6B6B] font-semibold tracking-wider" style={{ fontSize: "10px" }}>SECONDS</span>
-          </div>
+          {/* Bottom accent */}
+          <div className="pb-5" />
         </motion.div>
 
         {/* Two Column Grid - My Tasks and Messages */}
