@@ -281,7 +281,7 @@ export default function DashboardMember({ onNavigate }: { onNavigate: (screen: s
         {/* Festival Countdown - Minimalist & Clean */}
         <motion.div
           variants={item}
-          className="bg-white rounded-2xl p-6"
+          className="bg-white rounded-2xl px-8 py-6"
         >
           <div className="text-center mb-4">
             <p className="text-[#6B6B6B] font-semibold tracking-wide mb-1" style={{ fontSize: "11px" }}>
